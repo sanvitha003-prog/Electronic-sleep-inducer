@@ -1,0 +1,28 @@
+Sleep Inducer - Simple Netlist (human-readable)
+
+Components:
+U1  FPGA_DEV_BOARD   - I2C_SDA, I2C_SCL, PWM_OUT, BUTTON_IN, I2S_SD, 3V3, GND
+U2  MAX30102         - VCC(3.3V), GND, SDA, SCL, INT (optional)
+Q1  MOSFET_N         - G (PWM_OUT via 100R), D (LED Cathode), S (GND)
+LED1 LED             - Anode (to 3.3V/5V via current limit), Cathode (to MOSFET D)
+SW1 Button           - One side to 3.3V, other to BUTTON_IN (10k pulldown to GND)
+R1  100R             - PWM to MOSFET gate series resistor
+R2  100k             - MOSFET gate pulldown
+R3  220R             - LED current limit (if driven from GPIO low-power)
+R4,R5 4.7k           - I2C pull-ups to 3.3V (if needed)
+C1  0.1uF            - Decoupling at MAX30102 VCC
+C2  10uF             - Bulk cap near regulator
+
+Nets:
+3V3 -> U1.3V3, U2.VCC, LED1.Anode (via limit), etc.
+GND -> U1.GND, U2.GND, Q1.S, C1-, C2-
+SDA -> U1.I2C_SDA, U2.SDA, R4 to 3V3
+SCL -> U1.I2C_SCL, U2.SCL, R5 to 3V3
+PWM -> U1.PWM_OUT, R1, Q1.G
+LED_CATH -> Q1.D, LED1.Cathode
+BUTTON -> U1.BUTTON_IN, SW1, Rpull (10k to GND)
+
+Notes:
+- Use LVCMOS33 IO standard for FPGA pins.
+- For high-power LEDs use a proper constant-current driver and heatsink.
+- This netlist is for guidance; import into KiCad and create symbols/footprints accordingly.
